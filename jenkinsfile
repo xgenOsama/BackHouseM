@@ -1,0 +1,39 @@
+pipeline{
+    agent any
+    tools {
+        maven 'maven 3'
+    }
+    environment {
+        DOCKER_TAG = getVersion()
+    }
+    stages{
+        stage('SCM'){
+            steps{
+                git credentialsId: 'xgen_github', url: 'https://github.com/xgenOsama/BackHouseM'
+            }
+        }
+        stage('maven build'){
+            steps{
+                sh "mvn clean package"
+            }
+        }
+        stage('docker build'){
+            steps{
+                sh "docker build . -t xgenosama/backhouse:${DOCKER_TAG} "
+            }
+        }
+        stage('dockerhub push'){
+            steps{
+                withCredentials([string(credentialsId: 'my_docker_hub_password', variable: 'DockerHubPwd')]) {
+                    sh "docker login -u xgenosama -p ${DockerHubPwd}"
+                }
+                sh "docker push  xgenosama/backhouse:${DOCKER_TAG} "
+            }
+        }
+    }
+}
+    
+def getVersion(){
+    def commitHash = sh returnStdout: true, script: 'git rev-parse --short HEAD'
+    return commitHash
+}
