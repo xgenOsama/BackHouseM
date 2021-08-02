@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: prod
+  name: backhouse
+  labels:
+    app: backhouse
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backhouse
+  template:
+    metadata:
+      labels:
+        app: backhouse
+    spec:
+      containers:
+      - name: backhouse
+        image: xgenosama/backhouse
+        ports:
+        - containerPort: 80
