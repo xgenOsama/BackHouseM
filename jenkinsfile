@@ -12,14 +12,9 @@ pipeline{
                 git credentialsId: 'xgen_github', url: 'https://github.com/xgenOsama/BackHouseM'
             }
         }
-        stage('maven build'){
-            steps{
-                sh "mvn clean package"
-            }
-        }
         stage('docker build'){
             steps{
-                sh "docker build . -t xgenosama/backhouse:${DOCKER_TAG} "
+                sh "docker build . -t xgenosama/backhouse"
             }
         }
         stage('dockerhub push'){
@@ -27,7 +22,7 @@ pipeline{
                 withCredentials([string(credentialsId: 'my_docker_hub_password', variable: 'DockerHubPwd')]) {
                     sh "docker login -u xgenosama -p ${DockerHubPwd}"
                 }
-                sh "docker push  xgenosama/backhouse:${DOCKER_TAG} "
+                sh "docker push  xgenosama/backhouse"
             }
         }
     }
