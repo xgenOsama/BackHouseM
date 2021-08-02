@@ -1,11 +1,4 @@
 pipeline{
-    agent any
-    tools {
-        maven 'maven 3'
-    }
-    environment {
-        DOCKER_TAG = getVersion()
-    }
     stages{
         stage('SCM'){
             steps{
@@ -28,7 +21,3 @@ pipeline{
     }
 }
     
-def getVersion(){
-    def commitHash = sh returnStdout: true, script: 'git rev-parse --short HEAD'
-    return commitHash
-}
