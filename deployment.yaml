@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
-namespace: dev
 metadata:
+  namespace: dev
   name: backhouse
   labels:
     app: backhouse

@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 namespace: dev
 metadata:
+  namespace: dev
   name: backhouse-http
   labels:
     app: backhouse
