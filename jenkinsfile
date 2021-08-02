@@ -11,9 +11,9 @@ pipeline{
         }
         stage('apply deployment to minikube'){
             steps{
-                sh "minikube  kubectl -- apply -f namespace.yaml"
-                sh "minikube  kubectl --  apply -f deployment.yaml"
-                sh "minikube  kubectl -- apply -f service.yaml"
+                sh "kubectl  apply -f namespace.yaml"
+                sh "kubectl  apply -f deployment.yaml"
+                sh "kubectl  apply -f service.yaml"
             }
         }
     }
