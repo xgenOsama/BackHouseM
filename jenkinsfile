@@ -1,14 +1,13 @@
 pipeline{
     agent any
     parameters {
-        gitParameter branchFilter: 'origin/(.*)', defaultValue: 'master', name: 'BRANCH', type: 'PT_BRANCH'
-
+        choice(name: 'BRANCH', choices: ['dev', 'test','prod'])
     }
     stages{
         stage('SCM'){
             steps{
                 // git credentialsId: 'xgen_github', url: 'https://github.com/xgenOsama/BackHouseM.git'
-                git credentialsId: 'xgen_github', branch: "master", url: 'https://github.com/jenkinsci/git-parameter-plugin.git'
+                git credentialsId: 'xgen_github', branch: "master", url: 'https://github.com/xgenOsama/BackHouseM.git'
                
             }
         }
@@ -25,19 +24,21 @@ pipeline{
                 sh "docker push  xgenosama/backhouse"
             }
         }
-        // stage('docker build'){
-        //     steps{
-        //         sh "docker build . -t xgenosama/backhouse"
-        //     }
-        // }
-        // stage('dockerhub push'){
-        //     steps{
-        //         withCredentials([string(credentialsId: 'my_docker_hub_password', variable: 'DockerHubPwd')]) {
-        //             sh "docker login -u xgenosama -p ${DockerHubPwd}"
-        //         }
-        //         sh "docker push  xgenosama/backhouse"
-        //     }
-        // }
+        stage('docker build'){
+            steps{
+                git credentialsId: 'xgen_github', branch: "${params.name.BRANCH}", url: 'https://github.com/xgenOsama/BackHouseM.git'
+                sh "docker build . -t xgenosama/backhouse"
+            }
+        }
+        stage('dockerhub push'){
+            steps{
+                withCredentials([string(credentialsId: 'my_docker_hub_password', variable: 'DockerHubPwd')]) {
+                    sh "docker login -u xgenosama -p ${DockerHubPwd}"
+                }
+                git credentialsId: 'xgen_github', branch: "${params.name.BRANCH}", url: 'https://github.com/xgenOsama/BackHouseM.git'
+                sh "docker push  xgenosama/backhouse"
+            }
+        }
     }
 }
     
