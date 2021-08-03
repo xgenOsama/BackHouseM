@@ -1,8 +1,15 @@
 pipeline{
+    agent any
+    parameters {
+        gitParameter branchFilter: 'origin/(.*)', defaultValue: 'master', name: 'BRANCH', type: 'PT_BRANCH'
+
+    }
     stages{
         stage('SCM'){
             steps{
-                git credentialsId: 'xgen_github', url: 'https://github.com/xgenOsama/BackHouseM'
+                // git credentialsId: 'xgen_github', url: 'https://github.com/xgenOsama/BackHouseM.git'
+                git credentialsId: 'xgen_github', branch: "master", url: 'https://github.com/jenkinsci/git-parameter-plugin.git'
+               
             }
         }
         stage('docker build'){
@@ -18,6 +25,19 @@ pipeline{
                 sh "docker push  xgenosama/backhouse"
             }
         }
+        // stage('docker build'){
+        //     steps{
+        //         sh "docker build . -t xgenosama/backhouse"
+        //     }
+        // }
+        // stage('dockerhub push'){
+        //     steps{
+        //         withCredentials([string(credentialsId: 'my_docker_hub_password', variable: 'DockerHubPwd')]) {
+        //             sh "docker login -u xgenosama -p ${DockerHubPwd}"
+        //         }
+        //         sh "docker push  xgenosama/backhouse"
+        //     }
+        // }
     }
 }
     
