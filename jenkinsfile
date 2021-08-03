@@ -26,21 +26,25 @@ pipeline{
         }
         stage('dockerhub pull image'){
             steps{
-                 if (params.BRANCH == 'dev' || params.BRANCH == "test" || params.BRANCH == "prod") {
-                    withCredentials([string(credentialsId: 'my_docker_hub_password', variable: 'DockerHubPwd')]) {
-                        sh "docker login -u xgenosama -p ${DockerHubPwd}"
-                    }
-                    sh "docker pull  xgenosama/backhouse"
-                 }            
+                script {
+                    if (params.BRANCH == 'dev' || params.BRANCH == "test" || params.BRANCH == "prod") {
+                        withCredentials([string(credentialsId: 'my_docker_hub_password', variable: 'DockerHubPwd')]) {
+                            sh "docker login -u xgenosama -p ${DockerHubPwd}"
+                        }
+                        sh "docker pull  xgenosama/backhouse"
+                    }       
+                }     
             }
         }
         stage('apply deployment to minikube'){
             steps{
                 // git credentialsId: 'xgen_github', branch: "${params.BRANCH}", url: 'https://github.com/xgenOsama/BackHouseM.git'
-               if (params.BRANCH == 'dev' || params.BRANCH == "test" || params.BRANCH == "prod") {
-                    sh "kubectl apply -f namespace.yaml"
-                    sh "kubectl apply -f deployment.yaml"
-                    sh "kubectl apply -f service.yaml"
+                script {
+                    if (params.BRANCH == 'dev' || params.BRANCH == "test" || params.BRANCH == "prod") {
+                            sh "kubectl apply -f namespace.yaml"
+                            sh "kubectl apply -f deployment.yaml"
+                            sh "kubectl apply -f service.yaml"
+                    }
                 }
             }
         }
