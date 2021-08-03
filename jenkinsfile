@@ -1,14 +1,14 @@
 pipeline{
     agent any
     parameters {
-        choice(name: 'BRANCH', choices: ['dev', 'test','prod'])
+        choice(name: 'BRANCH', choices: ['dev', 'test','prod','master'])
     }
     stages{
         stage('SCM'){
             steps{
                 // git credentialsId: 'xgen_github', url: 'https://github.com/xgenOsama/BackHouseM.git'
-                git credentialsId: 'xgen_github', branch: "master", url: 'https://github.com/xgenOsama/BackHouseM.git'
-               
+               // git credentialsId: 'xgen_github', branch: "master", url: 'https://github.com/xgenOsama/BackHouseM.git'
+                sh "git checkout ${params.BRANCH}"
             }
         }
         stage('docker build'){
@@ -26,18 +26,22 @@ pipeline{
         }
         stage('dockerhub pull image'){
             steps{
-                withCredentials([string(credentialsId: 'my_docker_hub_password', variable: 'DockerHubPwd')]) {
-                    sh "docker login -u xgenosama -p ${DockerHubPwd}"
-                }
-                sh "docker pull  xgenosama/backhouse"
+                 if (params.BRANCH == 'dev' || params.BRANCH == "test" || params.BRANCH == "prod") {
+                    withCredentials([string(credentialsId: 'my_docker_hub_password', variable: 'DockerHubPwd')]) {
+                        sh "docker login -u xgenosama -p ${DockerHubPwd}"
+                    }
+                    sh "docker pull  xgenosama/backhouse"
+                 }            
             }
         }
         stage('apply deployment to minikube'){
             steps{
-                git credentialsId: 'xgen_github', branch: "${params.BRANCH}", url: 'https://github.com/xgenOsama/BackHouseM.git'
-                sh "kubectl apply -f namespace.yaml"
-                sh "kubectl apply -f deployment.yaml"
-                sh "kubectl apply -f service.yaml"
+                // git credentialsId: 'xgen_github', branch: "${params.BRANCH}", url: 'https://github.com/xgenOsama/BackHouseM.git'
+               if (params.BRANCH == 'dev' || params.BRANCH == "test" || params.BRANCH == "prod") {
+                    sh "kubectl apply -f namespace.yaml"
+                    sh "kubectl apply -f deployment.yaml"
+                    sh "kubectl apply -f service.yaml"
+                }
             }
         }
     }
