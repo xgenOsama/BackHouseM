@@ -24,7 +24,7 @@ pipeline{
                 sh "docker push  xgenosama/backhouse"
             }
         }
-        stage('docker build'){
+        stage('docker build local'){
             steps{
                 git credentialsId: 'xgen_github', branch: "${params.BRANCH}", url: 'https://github.com/xgenOsama/BackHouseM.git'
                 sh "docker build . -t xgenosama/backhouse"
