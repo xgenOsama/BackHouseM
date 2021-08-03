@@ -24,19 +24,20 @@ pipeline{
                 sh "docker push  xgenosama/backhouse"
             }
         }
-        stage('docker build local'){
-            steps{
-                git credentialsId: 'xgen_github', branch: "${params.BRANCH}", url: 'https://github.com/xgenOsama/BackHouseM.git'
-                sh "docker build . -t xgenosama/backhouse"
-            }
-        }
-        stage('dockerhub push'){
+        stage('dockerhub pull image'){
             steps{
                 withCredentials([string(credentialsId: 'my_docker_hub_password', variable: 'DockerHubPwd')]) {
                     sh "docker login -u xgenosama -p ${DockerHubPwd}"
                 }
+                sh "docker pull  xgenosama/backhouse"
+            }
+        }
+        stage('apply deployment to minikube'){
+            steps{
                 git credentialsId: 'xgen_github', branch: "${params.BRANCH}", url: 'https://github.com/xgenOsama/BackHouseM.git'
-                sh "docker push  xgenosama/backhouse"
+                sh "kubectl apply -f namespace.yaml"
+                sh "kubectl apply -f deployment.yaml"
+                sh "kubectl apply -f service.yaml"
             }
         }
     }
