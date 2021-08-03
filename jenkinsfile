@@ -8,7 +8,8 @@ pipeline{
             steps{
                 // git credentialsId: 'xgen_github', url: 'https://github.com/xgenOsama/BackHouseM.git'
                // git credentialsId: 'xgen_github', branch: "master", url: 'https://github.com/xgenOsama/BackHouseM.git'
-                sh "git checkout ${params.BRANCH}"
+                sh "git checkout scm"
+                sh "git checkout -b ${params.BRANCH}"
             }
         }
         stage('docker build'){
