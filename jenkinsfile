@@ -12,16 +12,25 @@ pipeline{
             }
         }
         stage('docker build'){
+
             steps{
-                sh "docker build . -t xgenosama/backhouse"
+                script {
+                    if (params.BRANCH == 'master') {
+                        sh "docker build . -t xgenosama/backhouse"
+                    }
+                }
             }
         }
         stage('dockerhub push'){
             steps{
-                withCredentials([string(credentialsId: 'my_docker_hub_password', variable: 'DockerHubPwd')]) {
-                    sh "docker login -u xgenosama -p ${DockerHubPwd}"
+                script {
+                    if (params.BRANCH == 'master') {
+                        withCredentials([string(credentialsId: 'my_docker_hub_password', variable: 'DockerHubPwd')]) {
+                            sh "docker login -u xgenosama -p ${DockerHubPwd}"
+                        }
+                        sh "docker push  xgenosama/backhouse"
+                    }
                 }
-                sh "docker push  xgenosama/backhouse"
             }
         }
         stage('dockerhub pull image'){
