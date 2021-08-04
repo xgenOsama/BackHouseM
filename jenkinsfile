@@ -2,6 +2,7 @@ pipeline{
     agent any
     parameters {
         choice(name: 'BRANCH', choices: ['dev', 'test','prod','master'])
+        choice(name: 'ACTION', choices: ['build', 'destroy'])
     }
     stages{
         stage('SCM'){
@@ -53,9 +54,16 @@ pipeline{
                 // git credentialsId: 'xgen_github', branch: "${params.BRANCH}", url: 'https://github.com/xgenOsama/BackHouseM.git'
                 script {
                     if (params.BRANCH == 'dev' || params.BRANCH == "test" || params.BRANCH == "prod") {
-                            sh "kubectl apply -f namespace.yaml"
-                            sh "kubectl apply -f deployment.yaml"
-                            sh "kubectl apply -f service.yaml"
+                            if(params.ACTION == 'build'){
+                                sh "kubectl apply -f namespace.yaml"
+                                sh "kubectl apply -f deployment.yaml"
+                                sh "kubectl apply -f service.yaml"
+                            }else if(params.ACTION == 'delete'){
+                                sh "kubectl delete -f namespace.yaml"
+                                sh "kubectl delete -f deployment.yaml"
+                                sh "kubectl delete -f service.yaml"
+                            }
+
                     }
                 }
             }
