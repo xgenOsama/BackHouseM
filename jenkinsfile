@@ -19,9 +19,8 @@ pipeline{
             steps{
                 script{
                     if(params.BRANCH == "master"){
-                        def mvnHome =  tool name: 'maven 3', type: 'maven'
                         withSonarQubeEnv('sonar-9') { 
-                            sh "${mvnHome}/bin/mvn sonar:sonar"
+                            sh "index.html sonar:sonar"
                         }
                     }
                 }
