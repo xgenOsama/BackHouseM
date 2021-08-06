@@ -17,7 +17,7 @@ pipeline{
         }
         stage('check code quality'){
             steps{
-                def scannerHome = tool 'sonarQubeSacnner4';
+                def scannerHome = tool 'sonarQubeSacnner4' type: 'hudson.plugins.sonar.SonarRunnerInstallation'
                 withSonarQubeEnv('sonar-9') { 
                     sh "${scannerHome}/bin/sonar-scanner"
                 }   
