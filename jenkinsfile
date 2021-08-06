@@ -17,7 +17,7 @@ pipeline{
         }
         stage('SonarQube Analysis'){
             steps{
-                scannerHome = tool 'sonar-9'
+                def scannerHome = tool 'sonar-9'
                 script{
                     if(params.BRANCH == "master"){
                         withSonarQubeEnv('sonar-9') { 
