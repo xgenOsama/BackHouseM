@@ -20,9 +20,13 @@ pipeline{
         }
         stage('check code quality'){
             steps{
-                withSonarQubeEnv('sonar-9') { 
-                    sh "${scannerHome}/bin/sonar-scanner"
-                }   
+              script {
+               if (params.BRANCH == 'master') {
+                    withSonarQubeEnv('sonar-9') { 
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }   
+                  }
+                }
             }
         }
         stage('docker build'){
