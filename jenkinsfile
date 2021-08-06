@@ -16,10 +16,12 @@ pipeline{
             }
         }
         stage('check code quality'){
-            def scannerHome = tool 'sonarQubeSacnner4';
-            withSonarQubeEnv('sonar-9') { 
-                sh "${scannerHome}/bin/sonar-scanner"
-            }   
+            steps{
+                def scannerHome = tool 'sonarQubeSacnner4';
+                withSonarQubeEnv('sonar-9') { 
+                    sh "${scannerHome}/bin/sonar-scanner"
+                }   
+            }
         }
         stage('docker build'){
 
