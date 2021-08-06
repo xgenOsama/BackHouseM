@@ -4,6 +4,9 @@ pipeline{
         choice(name: 'BRANCH', choices: ['master','dev', 'test','prod'])
         choice(name: 'ACTION', choices: ['build', 'destroy'])
     }
+    environment {
+        scannerHome = getSonarScanner()
+    }
     stages{
         stage('SCM'){
             steps{
@@ -17,7 +20,6 @@ pipeline{
         }
         stage('check code quality'){
             steps{
-                def scannerHome = tool name:'sonarQubeSacnner4', type: 'hudson.plugins.sonar.SonarRunnerInstallation';
                 withSonarQubeEnv('sonar-9') { 
                     sh "${scannerHome}/bin/sonar-scanner"
                 }   
@@ -77,5 +79,9 @@ pipeline{
             }
         }
     }
+}
+def getSonarScanner(){
+    def scannerHome = tool name:'sonarQubeSacnner4', type: 'hudson.plugins.sonar.SonarRunnerInstallation';
+    return scannerHome
 }
     
