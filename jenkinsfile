@@ -18,29 +18,29 @@ pipeline{
 
             }
         }
-        stage('check code quality'){
-            steps{
-              script {
-               if (params.BRANCH == 'master') {
-                    withSonarQubeEnv('sonar-9') { 
-                        sh "${scannerHome}/bin/sonar-scanner"
-                    }   
-                  }
-                }
-            }
-        }
-        stage("Quality Gate"){
-            steps {
-                script{
-                    timeout(time: 1, unit: 'HOURS') { // Just in case something goes wrong, pipeline will be killed after a timeout
-                        def qg = waitForQualityGate() // Reuse taskId previously collected by withSonarQubeEnv
-                        if (qg.status != 'OK') {
-                        error "Pipeline aborted due to quality gate failure: ${qg.status}"
-                        }
-                    }
-                }
-            }
-        }
+        // stage('check code quality'){
+        //     steps{
+        //       script {
+        //        if (params.BRANCH == 'master') {
+        //             withSonarQubeEnv('sonar-9') { 
+        //                 sh "${scannerHome}/bin/sonar-scanner"
+        //             }   
+        //           }
+        //         }
+        //     }
+        // }
+        // stage("Quality Gate"){
+        //     steps {
+        //         script{
+        //             timeout(time: 1, unit: 'HOURS') { // Just in case something goes wrong, pipeline will be killed after a timeout
+        //                 def qg = waitForQualityGate() // Reuse taskId previously collected by withSonarQubeEnv
+        //                 if (qg.status != 'OK') {
+        //                 error "Pipeline aborted due to quality gate failure: ${qg.status}"
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
         stage('docker build'){
 
             steps{
@@ -81,13 +81,13 @@ pipeline{
                 script {
                     if (params.BRANCH == 'dev' || params.BRANCH == "test" || params.BRANCH == "prod") {
                             if(params.ACTION == 'build'){
-                                sh "kubectl apply -f namespace.yaml"
-                                sh "kubectl apply -f deployment.yaml"
-                                sh "kubectl apply -f service.yaml"
+                                sh "kubectl --kubeconfig ${my_kube_config} apply -f namespace.yaml"
+                                sh "kubectl --kubeconfig ${my_kube_config} apply -f deployment.yaml"
+                                sh "kubectl --kubeconfig ${my_kube_config} apply -f service.yaml"
                             }else if(params.ACTION == 'destroy'){
-                                sh "kubectl delete -f deployment.yaml"
-                                sh "kubectl delete -f service.yaml"
-                                sh "kubectl delete -f namespace.yaml"
+                                sh "kubectl --kubeconfig ${my_kube_config} delete -f deployment.yaml"
+                                sh "kubectl --kubeconfig ${my_kube_config} delete -f service.yaml"
+                                sh "kubectl --kubeconfig ${my_kube_config} delete -f namespace.yaml"
                             }
 
                     }
@@ -97,7 +97,8 @@ pipeline{
     }
 }
 def getSonarScanner(){
-    def scannerHome = tool name:'sonarQubeSacnner4', type: 'hudson.plugins.sonar.SonarRunnerInstallation';
-    return scannerHome
+   // def scannerHome = tool name:'sonarQubeSacnner4', type: 'hudson.plugins.sonar.SonarRunnerInstallation';
+   // return scannerHome
+   return '';
 }
     
